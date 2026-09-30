@@ -41,9 +41,19 @@
     <section class="card">
       <h2>3. Find a translation</h2>
       <label for="hindiText">Hindi word or sentence</label>
-      <textarea id="hindiText" rows="3"
-        placeholder="यहाँ हिंदी शब्द या वाक्य लिखें"></textarea>
-      <button id="lookupButton">Find translation</button>
+      
+<textarea id="hindiText" rows="3"
+  placeholder="यहाँ हिंदी शब्द या वाक्य लिखें"></textarea>
+
+<button id="voiceButton" type="button">
+  🎙️ Speak in Hindi
+</button>
+
+<p id="voiceStatus" role="status" aria-live="polite">
+  Tap the microphone and speak in Hindi.
+</p>
+
+<button id="lookupButton">Find translation</button>
       <div id="translationResult" aria-live="polite"></div>
     </section>
 
