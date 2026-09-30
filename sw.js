@@ -1,5 +1,8 @@
 const CACHE_NAME = "bhashabridge-shell-v2";
 
+
+const CACHE_NAME = "bhashabridge-shell-v3";
+
 const APP_FILES = [
   "./",
   "./index.html",
@@ -8,7 +11,7 @@ const APP_FILES = [
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  ".
+  "./Mundari_Phrasebook.csv"
 ];
 
 // Install: cache the app files for offline use.
