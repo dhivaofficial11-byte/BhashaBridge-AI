@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "BhashaBridge-AI",
+  "short_name": "BhashaBridge",
+  "description": "Mother-tongue learning support for primary education.",
+  "lang": "en",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f8f6",
+  "theme_color": "#176b57",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

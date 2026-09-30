@@ -1,0 +1,193 @@
+/* BhashaBridge-AI: mobile-friendly visual design */
+
+:root {
+  --primary: #176b57;
+  --primary-dark: #105342;
+  --page-bg: #f3f8f6;
+  --card-bg: #ffffff;
+  --text: #20312c;
+  --muted: #5d6f68;
+  --border: #d6e5df;
+  --focus: #f0b429;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page-bg);
+  color: var(--text);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+header {
+  padding: 28px 18px;
+  background: var(--primary);
+  color: white;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  letter-spacing: -0.5px;
+}
+
+header p {
+  margin: 5px 0 0;
+}
+
+#connection {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+main {
+  width: min(100% - 28px, 720px);
+  margin: 22px auto;
+}
+
+.card {
+  margin-bottom: 18px;
+  padding: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(20, 70, 52, 0.06);
+}
+
+.card h2 {
+  margin-top: 0;
+  color: var(--primary-dark);
+  font-size: 1.2rem;
+}
+
+label {
+  display: block;
+  margin: 14px 0 6px;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #b9cec5;
+  border-radius: 10px;
+  background: white;
+  color: var(--text);
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="file"] {
+  padding: 9px;
+  font-size: 0.92rem;
+}
+
+button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+button:active {
+  transform: scale(0.99);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+#translationResult {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+#translationResult h3 {
+  margin-top: 0;
+  color: var(--primary-dark);
+}
+
+#translationResult:empty {
+  display: none;
+}
+
+#downloadLink {
+  display: block;
+  margin-top: 16px;
+  color: var(--primary-dark);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  padding: 14px;
+  border-left: 4px solid var(--focus);
+  border-radius: 6px;
+  background: #fff9e9;
+  font-size: 0.9rem;
+}
+
+footer {
+  padding: 20px 14px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 600px) {
+  main {
+    margin-top: 30px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

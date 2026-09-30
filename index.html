@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176B57">
+
+  <title>BhashaBridge-AI</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <header>
+    <h1>BhashaBridge-AI</h1>
+    <p>Learning together in every language</p>
+    <p id="connection">Checking app status...</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Choose a language</h2>
+      <label for="language">Target language</label>
+      <select id="language">
+        <option value="Ho">Ho</option>
+        <option value="Mundari">Mundari</option>
+        <option value="Santhali">Santhali</option>
+      </select>
+    </section>
+
+    <section class="card">
+      <h2>2. Import your phrasebook</h2>
+      <p>Select a CSV file containing reviewed translations.</p>
+      <input id="csvFile" type="file" accept=".csv,text/csv">
+      <button id="importButton">Import phrasebook</button>
+      <p id="importStatus" role="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>3. Find a translation</h2>
+      <label for="hindiText">Hindi word or sentence</label>
+      <textarea id="hindiText" rows="3"
+        placeholder="यहाँ हिंदी शब्द या वाक्य लिखें"></textarea>
+      <button id="lookupButton">Find translation</button>
+      <div id="translationResult" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h2>4. Create a worksheet</h2>
+      <label for="worksheetTitle">Worksheet title</label>
+      <input id="worksheetTitle" type="text"
+        placeholder="My language worksheet">
+      <label for="worksheetText">Lesson content</label>
+      <textarea id="worksheetText" rows="4"
+        placeholder="Enter lesson content in Hindi"></textarea>
+      <button id="worksheetButton">Prepare worksheet</button>
+      <a id="downloadLink" hidden>Download worksheet</a>
+    </section>
+
+    <p class="notice">
+      Translations are shown only when the CSV marks them as verified
+      and names a reviewer. Please independently confirm the reviewer's
+      qualifications and the translation's accuracy.
+    </p>
+  </main>
+
+  <footer>
+    <p>BhashaBridge-AI · Mother-tongue learning support</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
