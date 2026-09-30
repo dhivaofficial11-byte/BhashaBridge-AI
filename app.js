@@ -282,120 +282,31 @@ if (!SpeechRecognition) {
   });
 }
 
+
 /* =========================================
-   PRELOADED HO PHRASEBOOK
+   PRELOADED MUNDARI PHRASEBOOK
    ========================================= */
 
-(async function loadHoPhrasebook() {
+(async function loadMundariPhrasebook() {
   const status = document.getElementById(
-    "hoPhrasebookStatus"
+    "mundariPhrasebookStatus"
   );
 
   const tableBody = document.getElementById(
-    "hoPhrasebookBody"
+    "mundariPhrasebookBody"
   );
 
   const downloadButton = document.getElementById(
-    "downloadHoPhrasebook"
+    "downloadMundariPhrasebook"
   );
 
   if (!status || !tableBody || !downloadButton) {
+    console.error("Mundari phrasebook HTML elements were not found.");
     return;
   }
 
-  let verifiedHoEntries = [];
+  let verifiedMundariEntries = [];
 
-  // Read CSV fields, including fields containing commas.
-  function parseHoCSV(text) {
-    const rows = [];
-    let row = [];
-    let field = "";
-    let quoted = false;
-
-    text = text.replace(/^\uFEFF/, "");
-
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-
-      if (ch === '"') {
-        if (quoted && text[i + 1] === '"') {
-          field += '"';
-          i++;
-        } else {
-          quoted = !quoted;
-        }
-      } else if (ch === "," && !quoted) {
-        row.push(field);
-        field = "";
-      } else if (
-        (ch === "\n" || ch === "\r") && !quoted
-      ) {
-        if (ch === "\r" && text[i + 1] === "\n") {
-          i++;
-        }
-
-        row.push(field);
-
-        if (row.some(value => value.trim() !== "")) {
-          rows.push(row);
-        }
-
-        row = [];
-        field = "";
-      } else {
-        field += ch;
-      }
-    }
-
-    if (field !== "" || row.length > 0) {
-      row.push(field);
-
-      if (row.some(value => value.trim() !== "")) {
-        rows.push(row);
-      }
-    }
-
-    if (rows.length < 2) {
-      return [];
-    }
-
-    const headers = rows[0].map(value =>
-      value.trim().replace(/^\uFEFF/, "").toLowerCase()
-    );
-
-    const column = name => headers.indexOf(name);
-
-    const hindiCol = column("hindi");
-    const languageCol = column("language");
-    const translationCol = column("translation");
-    const verifiedCol = column("verified");
-    const reviewerCol = column("verified_by");
-
-    const required = [
-      hindiCol,
-      languageCol,
-      translationCol,
-      verifiedCol,
-      reviewerCol
-    ];
-
-    if (required.some(index => index < 0)) {
-      throw new Error(
-        "CSV must contain Hindi, Language, Translation, " +
-        "Verified, and Verified_By columns."
-      );
-    }
-
-    return rows.slice(1).map(values => ({
-      Hindi: (values[hindiCol] || "").trim(),
-      Language: (values[languageCol] || "").trim(),
-      Translation: (values[translationCol] || "").trim(),
-      Verified: (values[verifiedCol] || "").trim(),
-      Verified_By: (values[reviewerCol] || "").trim()
-    }));
-  }
-
-  // Show text safely without interpreting it as HTML.
   function addCell(row, value) {
     const cell = document.createElement("td");
     cell.textContent = value;
@@ -409,34 +320,36 @@ if (!SpeechRecognition) {
   }
 
   try {
-    status.textContent = "Loading Ho phrasebook...";
+    status.textContent = "Loading Mundari phrasebook...";
 
-    // This file is hosted alongside index.html.
-    // The service worker will cache it for offline access.
-    const response = await fetch("./Ho_Phrasebook.csv");
+    // Load the CSV stored beside index.html and app.js.
+    const response = await fetch("./Mundari_Phrasebook.csv");
 
     if (!response.ok) {
       throw new Error(
-        "Could not load Ho_Phrasebook.csv. " +
-        "Check that the file exists in your GitHub repository."
+        "Could not load Mundari_Phrasebook.csv. " +
+        "Check that the filename is correct and the file " +
+        "exists in your GitHub repository."
       );
     }
 
     const csvText = await response.text();
-    const allEntries = parseHoCSV(csvText);
 
-    // Only eligible Ho translations are displayed/downloaded.
-    verifiedHoEntries = allEntries.filter(entry =>
-      entry.Language.toLowerCase() === "ho" &&
-      entry.Verified.toLowerCase() === "yes" &&
-      entry.Hindi !== "" &&
-      entry.Translation !== "" &&
-      entry.Verified_By !== ""
+    // Reuse the CSV parser already defined at the top of app.js.
+    const allEntries = parseCSV(csvText);
+
+    // Display only eligible Mundari entries.
+    verifiedMundariEntries = allEntries.filter(entry =>
+      normalize(entry.Language) === "mundari" &&
+      normalize(entry.Verified) === "yes" &&
+      entry.Hindi.trim() !== "" &&
+      entry.Translation.trim() !== "" &&
+      entry.Verified_By.trim() !== ""
     );
 
     tableBody.replaceChildren();
 
-    verifiedHoEntries.forEach(entry => {
+    verifiedMundariEntries.forEach(entry => {
       const row = document.createElement("tr");
 
       addCell(row, entry.Hindi);
@@ -446,27 +359,27 @@ if (!SpeechRecognition) {
       tableBody.appendChild(row);
     });
 
-    if (verifiedHoEntries.length === 0) {
+    if (verifiedMundariEntries.length === 0) {
       status.textContent =
-        "No eligible verified Ho entries were found. " +
-        "Check the CSV columns and verification values.";
+        "No eligible Mundari entries found. " +
+        "Check the CSV headers, language names, and Verified values.";
       return;
     }
 
     status.textContent =
-      verifiedHoEntries.length +
-      " verified Ho entries loaded.";
+      verifiedMundariEntries.length +
+      " eligible Mundari entries loaded.";
 
     downloadButton.disabled = false;
 
   } catch (error) {
-    status.textContent = error.message;
-    console.error("Ho phrasebook error:", error);
+    status.textContent = "Mundari phrasebook error: " + error.message;
+    console.error("Mundari phrasebook error:", error);
   }
 
-  // Download the verified Ho entries as a separate CSV.
+  // Download only the eligible Mundari entries.
   downloadButton.addEventListener("click", () => {
-    if (verifiedHoEntries.length === 0) return;
+    if (verifiedMundariEntries.length === 0) return;
 
     const headers = [
       "Hindi",
@@ -476,20 +389,19 @@ if (!SpeechRecognition) {
       "Verified_By"
     ];
 
-    const rows = verifiedHoEntries.map(entry => [
+    const rows = verifiedMundariEntries.map(entry => [
       entry.Hindi,
-      "Ho",
+      entry.Language,
       entry.Translation,
-      "Yes",
+      entry.Verified,
       entry.Verified_By
     ]);
 
-    const csv = [
-      headers,
-      ...rows
-    ].map(row => row.map(csvEscape).join(",")).join("\r\n");
+    const csv = [headers, ...rows]
+      .map(row => row.map(csvEscape).join(","))
+      .join("\r\n");
 
-    // UTF-8 BOM helps Excel display Hindi correctly.
+    // Preserve Hindi text when opening the CSV in spreadsheet apps.
     const blob = new Blob(
       ["\uFEFF" + csv],
       { type: "text/csv;charset=utf-8;" }
@@ -499,7 +411,7 @@ if (!SpeechRecognition) {
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = "Ho_Phrasebook.csv";
+    link.download = "Mundari_Phrasebook.csv";
 
     document.body.appendChild(link);
     link.click();
