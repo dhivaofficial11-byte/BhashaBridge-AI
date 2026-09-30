@@ -223,3 +223,61 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
+
+/* Hindi speech-to-text feature */
+const voiceButton = document.getElementById("voiceButton");
+const voiceStatus = document.getElementById("voiceStatus");
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if (!SpeechRecognition) {
+  voiceButton.disabled = true;
+  voiceStatus.textContent =
+    "Speech recognition is not supported in this browser. Try an updated Chrome browser.";
+} else {
+  recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    voiceButton.textContent = "🎙️ Listening...";
+    voiceStatus.textContent = "Please speak in Hindi.";
+  };
+
+  recognition.onresult = (event) => {
+    const spokenText =
+      event.results[0][0].transcript.trim();
+
+    document.getElementById("hindiText").value =
+      spokenText;
+
+    voiceStatus.textContent =
+      "Recognized text: " + spokenText +
+      ". Check the text, then tap Find translation.";
+  };
+
+  recognition.onerror = (event) => {
+    voiceStatus.textContent =
+      "Speech recognition failed: " + event.error +
+      ". Check microphone permission and internet connection.";
+  };
+
+  recognition.onend = () => {
+    voiceButton.textContent = "🎙️ Speak in Hindi";
+  };
+
+  voiceButton.addEventListener("click", () => {
+    try {
+      recognition.start();
+    } catch (error) {
+      voiceStatus.textContent =
+        "Please wait a moment and try the microphone again.";
+    }
+  });
+}
