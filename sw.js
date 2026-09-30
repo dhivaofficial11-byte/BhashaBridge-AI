@@ -1,4 +1,4 @@
-const CACHE_NAME = "bhashabridge-shell-v1";
+const CACHE_NAME = "bhashabridge-shell-v2";
 
 const APP_FILES = [
   "./",
@@ -7,7 +7,8 @@ const APP_FILES = [
   "./style.css",
   "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  ".
 ];
 
 // Install: cache the app files for offline use.
