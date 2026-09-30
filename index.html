@@ -38,6 +38,31 @@
       <p id="importStatus" role="status"></p>
     </section>
 
+    <section class="card" id="hoPhrasebookSection">
+      <h2>Ho Phrasebook</h2>
+      <p>Preloaded Hindi–Ho translations for offline use.</p>
+
+      <p id="hoPhrasebookStatus" role="status">
+        Loading Ho phrasebook...
+      </p>
+
+      <button id="downloadHoPhrasebook" type="button" disabled>
+        Download Ho Phrasebook CSV
+      </button>
+
+      <div style="overflow-x:auto; margin-top:16px;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th>Hindi</th>
+              <th>Ho Translation</th>
+              <th>Verified By</th>
+            </tr>
+          </thead>
+          <tbody id="hoPhrasebookBody"></tbody>
+        </table>
+      </div>
+    </section>
     <section class="card">
       <h2>3. Find a translation</h2>
       <label for="hindiText">Hindi word or sentence</label>
