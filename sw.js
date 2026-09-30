@@ -1,6 +1,3 @@
-const CACHE_NAME = "bhashabridge-shell-v2";
-
-
 const CACHE_NAME = "bhashabridge-shell-v3";
 
 const APP_FILES = [
