@@ -281,3 +281,230 @@ if (!SpeechRecognition) {
     }
   });
 }
+
+/* =========================================
+   PRELOADED HO PHRASEBOOK
+   ========================================= */
+
+(async function loadHoPhrasebook() {
+  const status = document.getElementById(
+    "hoPhrasebookStatus"
+  );
+
+  const tableBody = document.getElementById(
+    "hoPhrasebookBody"
+  );
+
+  const downloadButton = document.getElementById(
+    "downloadHoPhrasebook"
+  );
+
+  if (!status || !tableBody || !downloadButton) {
+    return;
+  }
+
+  let verifiedHoEntries = [];
+
+  // Read CSV fields, including fields containing commas.
+  function parseHoCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let quoted = false;
+
+    text = text.replace(/^\uFEFF/, "");
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+
+      if (ch === '"') {
+        if (quoted && text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          quoted = !quoted;
+        }
+      } else if (ch === "," && !quoted) {
+        row.push(field);
+        field = "";
+      } else if (
+        (ch === "\n" || ch === "\r") && !quoted
+      ) {
+        if (ch === "\r" && text[i + 1] === "\n") {
+          i++;
+        }
+
+        row.push(field);
+
+        if (row.some(value => value.trim() !== "")) {
+          rows.push(row);
+        }
+
+        row = [];
+        field = "";
+      } else {
+        field += ch;
+      }
+    }
+
+    if (field !== "" || row.length > 0) {
+      row.push(field);
+
+      if (row.some(value => value.trim() !== "")) {
+        rows.push(row);
+      }
+    }
+
+    if (rows.length < 2) {
+      return [];
+    }
+
+    const headers = rows[0].map(value =>
+      value.trim().replace(/^\uFEFF/, "").toLowerCase()
+    );
+
+    const column = name => headers.indexOf(name);
+
+    const hindiCol = column("hindi");
+    const languageCol = column("language");
+    const translationCol = column("translation");
+    const verifiedCol = column("verified");
+    const reviewerCol = column("verified_by");
+
+    const required = [
+      hindiCol,
+      languageCol,
+      translationCol,
+      verifiedCol,
+      reviewerCol
+    ];
+
+    if (required.some(index => index < 0)) {
+      throw new Error(
+        "CSV must contain Hindi, Language, Translation, " +
+        "Verified, and Verified_By columns."
+      );
+    }
+
+    return rows.slice(1).map(values => ({
+      Hindi: (values[hindiCol] || "").trim(),
+      Language: (values[languageCol] || "").trim(),
+      Translation: (values[translationCol] || "").trim(),
+      Verified: (values[verifiedCol] || "").trim(),
+      Verified_By: (values[reviewerCol] || "").trim()
+    }));
+  }
+
+  // Show text safely without interpreting it as HTML.
+  function addCell(row, value) {
+    const cell = document.createElement("td");
+    cell.textContent = value;
+    cell.style.padding = "10px";
+    cell.style.borderBottom = "1px solid #777";
+    row.appendChild(cell);
+  }
+
+  function csvEscape(value) {
+    return '"' + String(value).replace(/"/g, '""') + '"';
+  }
+
+  try {
+    status.textContent = "Loading Ho phrasebook...";
+
+    // This file is hosted alongside index.html.
+    // The service worker will cache it for offline access.
+    const response = await fetch("./Ho_Phrasebook.csv");
+
+    if (!response.ok) {
+      throw new Error(
+        "Could not load Ho_Phrasebook.csv. " +
+        "Check that the file exists in your GitHub repository."
+      );
+    }
+
+    const csvText = await response.text();
+    const allEntries = parseHoCSV(csvText);
+
+    // Only eligible Ho translations are displayed/downloaded.
+    verifiedHoEntries = allEntries.filter(entry =>
+      entry.Language.toLowerCase() === "ho" &&
+      entry.Verified.toLowerCase() === "yes" &&
+      entry.Hindi !== "" &&
+      entry.Translation !== "" &&
+      entry.Verified_By !== ""
+    );
+
+    tableBody.replaceChildren();
+
+    verifiedHoEntries.forEach(entry => {
+      const row = document.createElement("tr");
+
+      addCell(row, entry.Hindi);
+      addCell(row, entry.Translation);
+      addCell(row, entry.Verified_By);
+
+      tableBody.appendChild(row);
+    });
+
+    if (verifiedHoEntries.length === 0) {
+      status.textContent =
+        "No eligible verified Ho entries were found. " +
+        "Check the CSV columns and verification values.";
+      return;
+    }
+
+    status.textContent =
+      verifiedHoEntries.length +
+      " verified Ho entries loaded.";
+
+    downloadButton.disabled = false;
+
+  } catch (error) {
+    status.textContent = error.message;
+    console.error("Ho phrasebook error:", error);
+  }
+
+  // Download the verified Ho entries as a separate CSV.
+  downloadButton.addEventListener("click", () => {
+    if (verifiedHoEntries.length === 0) return;
+
+    const headers = [
+      "Hindi",
+      "Language",
+      "Translation",
+      "Verified",
+      "Verified_By"
+    ];
+
+    const rows = verifiedHoEntries.map(entry => [
+      entry.Hindi,
+      "Ho",
+      entry.Translation,
+      "Yes",
+      entry.Verified_By
+    ]);
+
+    const csv = [
+      headers,
+      ...rows
+    ].map(row => row.map(csvEscape).join(",")).join("\r\n");
+
+    // UTF-8 BOM helps Excel display Hindi correctly.
+    const blob = new Blob(
+      ["\uFEFF" + csv],
+      { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "Ho_Phrasebook.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+})();
